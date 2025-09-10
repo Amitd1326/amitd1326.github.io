@@ -3,59 +3,130 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contact Us - Astro Vastu Insights</title>
+  <title>AstroVastu - Contact</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100 text-gray-800">
-  <section class="py-12 px-6 max-w-3xl mx-auto">
-    <h2 class="text-3xl font-bold text-center mb-6">Contact Us</h2>
-    <form id="contact-form" class="space-y-4 bg-white p-6 rounded-lg shadow-lg">
-      <input type="text" name="name" placeholder="Your Name" required class="w-full border px-3 py-2 rounded" />
-      <input type="email" name="email" placeholder="Your Email" required class="w-full border px-3 py-2 rounded" />
-      <textarea name="message" placeholder="Your Message" rows="5" required class="w-full border px-3 py-2 rounded"></textarea>
-      <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded">Send Message</button>
+<body class="bg-yellow-50 text-gray-800">
+
+  <!-- Navbar -->
+  <header class="bg-yellow-200 shadow-md">
+    <nav class="max-w-6xl mx-auto p-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-indigo-800">Astro Vastu Insights</h1>
+      <ul class="flex space-x-6">
+        <li><a href="index.html" class="hover:text-indigo-600">Home</a></li>
+        <li><a href="astrology.html" class="hover:text-indigo-600">Astrology</a></li>
+        <li><a href="vastu.html" class="hover:text-indigo-600">Vastu Shastra</a></li>
+        <li><a href="products.html" class="hover:text-indigo-600">Products</a></li>
+        <li><a href="about.html" class="hover:text-indigo-600">About Us</a></li>
+        <li><a href="contact.html" class="hover:text-indigo-600">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+<!-- contact-form.html (fragment) -->
+<section class="py-16 bg-gradient-to-r from-indigo-50 to-indigo-100 text-gray-800">
+  <div class="max-w-4xl mx-auto px-6">
+    <h2 class="text-3xl font-bold text-center text-indigo-800 mb-6">Contact Us</h2>
+    <p class="text-center text-lg mb-6 text-gray-600">Fill the form and we'll get back to you soon.</p>
+
+    <form id="contactForm" class="bg-white p-8 rounded-lg shadow-lg space-y-4">
+      <input type="hidden" name="hp" id="hp" value=""> <!-- honeypot (leave empty) -->
+      <input type="hidden" name="source" value="Website - Contact Page">
+
+      <div>
+        <label class="block text-gray-700">Name *</label>
+        <input type="text" name="name" id="name" required
+          class="w-full border rounded p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+      </div>
+
+      <div>
+        <label class="block text-gray-700">Email *</label>
+        <input type="email" name="email" id="email" required
+          class="w-full border rounded p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+      </div>
+
+      <div>
+        <label class="block text-gray-700">Phone</label>
+        <input type="tel" name="phone" id="phone"
+          class="w-full border rounded p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+      </div>
+
+      <div>
+        <label class="block text-gray-700">WhatsApp</label>
+        <input type="text" name="whatsapp" id="whatsapp"
+          class="w-full border rounded p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-green-400">
+      </div>
+
+      <div>
+        <label class="block text-gray-700">Message *</label>
+        <textarea name="message" id="message" rows="5" required
+          class="w-full border rounded p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-400"></textarea>
+      </div>
+
+      <div class="flex items-center space-x-4">
+        <button id="submitBtn" type="submit"
+          class="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 transition">Send Message</button>
+        <div id="formStatus" class="text-sm text-gray-600"></div>
+      </div>
     </form>
 
-    <p id="status" class="text-center mt-4"></p>
-
-    <div class="text-center mt-8">
-      <p><strong>Phone:</strong> +91-XXXXXXXXXX</p>
-      <p><strong>Email:</strong> info@yourdomain.com</p>
-      <p><strong>WhatsApp:</strong> +91-XXXXXXXXXX</p>
+    <div class="mt-8 text-center text-gray-700">
+      <p><strong>Email:</strong> <a href="mailto:Astrovastudwarka@gmail.com" class="text-indigo-700">Astrovastudwarka@gmail.com</a></p>
+      <p><strong>Phone:</strong> +91-9650000148</p>
+      <p><strong>WhatsApp:</strong> <a href="https://wa.me/919650000148" class="text-green-600">Chat on WhatsApp</a></p>
     </div>
-  </section>
+  </div>
 
   <script>
-    const form = document.getElementById("contact-form");
-    const status = document.getElementById("status");
+    // REPLACE with your Apps Script Web App URL (deployed)
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzmKLDILY3PTEaKD4ghlDbMMAIreRS2dFJGh6bCnPTtZhfb8AjXO0wrXdlnwto6lgdi/exec";
+
+    const form = document.getElementById("contactForm");
+    const status = document.getElementById("formStatus");
+    const btn = document.getElementById("submitBtn");
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
+      status.textContent = "Sending...";
+      btn.disabled = true;
 
-      const data = {
-        name: form.name.value,
-        email: form.email.value,
-        message: form.message.value,
+      // gather form data
+      const formData = {
+        name: document.getElementById("name").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        phone: document.getElementById("phone").value.trim(),
+        whatsapp: document.getElementById("whatsapp").value.trim(),
+        message: document.getElementById("message").value.trim(),
+        hp: document.getElementById("hp").value || "",
+        source: "Website - Contact Page"
       };
 
       try {
-        const response = await fetch("https://script.google.com/macros/s/AKfycbzmKLDILY3PTEaKD4ghlDbMMAIreRS2dFJGh6bCnPTtZhfb8AjXO0wrXdlnwto6lgdi/exec", {
+        const res = await fetch(WEB_APP_URL, {
           method: "POST",
-          body: JSON.stringify(data),
-          headers: { "Content-Type": "application/json" }
+          mode: "cors",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(formData)
         });
 
-        const result = await response.json();
-        if (result.result === "success") {
-          status.innerText = "✅ Thank you! Your message has been sent.";
+        // parse JSON response
+        const data = await res.json();
+
+        if (res.ok && data.status === "success") {
+          status.textContent = "Thank you — your message has been sent.";
           form.reset();
         } else {
-          status.innerText = "❌ Error: " + result.error;
+          status.textContent = data.message || "Submission failed. Try again later.";
         }
+
       } catch (err) {
-        status.innerText = "⚠️ Network error, please try again.";
+        console.error(err);
+        status.textContent = "Network error: could not submit form.";
+      } finally {
+        btn.disabled = false;
       }
     });
   </script>
-</body>
-</html>
+</section>
