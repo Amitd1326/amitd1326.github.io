@@ -23,53 +23,110 @@
     </nav>
   </header>
 
-  <!-- Contact Form -->
+<!-- contact-form.html (fragment) -->
 <section class="py-16 bg-gradient-to-r from-indigo-50 to-indigo-100 text-gray-800">
   <div class="max-w-4xl mx-auto px-6">
     <h2 class="text-3xl font-bold text-center text-indigo-800 mb-6">Contact Us</h2>
-    <p class="text-center text-lg mb-12 text-gray-600">If you have any questions or want to know more about our services, please fill out the form below.</p>
+    <p class="text-center text-lg mb-6 text-gray-600">Fill the form and we'll get back to you soon.</p>
 
-    <form action="https://formspree.io/f/xeolnzwd" method="POST" class="bg-white p-8 rounded-lg shadow-lg">
-      <div class="mb-4">
-        <label class="block text-gray-700">Name</label>
-        <input type="text" name="name" class="w-full border border-gray-300 rounded-lg p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-400" required>
+    <form id="contactForm" class="bg-white p-8 rounded-lg shadow-lg space-y-4">
+      <input type="hidden" name="hp" id="hp" value=""> <!-- honeypot (leave empty) -->
+      <input type="hidden" name="source" value="Website - Contact Page">
+
+      <div>
+        <label class="block text-gray-700">Name *</label>
+        <input type="text" name="name" id="name" required
+          class="w-full border rounded p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-400">
       </div>
 
-      <div class="mb-4">
-        <label class="block text-gray-700">Email</label>
-        <input type="email" name="email" class="w-full border border-gray-300 rounded-lg p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-400" required>
+      <div>
+        <label class="block text-gray-700">Email *</label>
+        <input type="email" name="email" id="email" required
+          class="w-full border rounded p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-400">
       </div>
 
-      <div class="mb-4">
+      <div>
         <label class="block text-gray-700">Phone</label>
-        <input type="tel" name="phone" class="w-full border border-gray-300 rounded-lg p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+        <input type="tel" name="phone" id="phone"
+          class="w-full border rounded p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-400">
       </div>
 
-      <div class="mb-4">
-        <label class="block text-gray-700">Message</label>
-        <textarea name="message" rows="4" class="w-full border border-gray-300 rounded-lg p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-400" required></textarea>
+      <div>
+        <label class="block text-gray-700">WhatsApp</label>
+        <input type="text" name="whatsapp" id="whatsapp"
+          class="w-full border rounded p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-green-400">
       </div>
 
-      <button type="submit" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition duration-300">
-        Send Message
-      </button>
+      <div>
+        <label class="block text-gray-700">Message *</label>
+        <textarea name="message" id="message" rows="5" required
+          class="w-full border rounded p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-400"></textarea>
+      </div>
+
+      <div class="flex items-center space-x-4">
+        <button id="submitBtn" type="submit"
+          class="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 transition">Send Message</button>
+        <div id="formStatus" class="text-sm text-gray-600"></div>
+      </div>
     </form>
 
-    <!-- Direct Contact Info -->
-    <div class="text-center mt-8 text-gray-700">
-      <p><strong>Email:</strong> Astrovastudwarka@gmail.com</p>
+    <div class="mt-8 text-center text-gray-700">
+      <p><strong>Email:</strong> <a href="mailto:Astrovastudwarka@gmail.com" class="text-indigo-700">Astrovastudwarka@gmail.com</a></p>
       <p><strong>Phone:</strong> +91-9650000148</p>
-      <p><strong>WhatsApp:</strong> <a href="https://wa.me/919650000148" class="text-green-600 hover:underline">Chat on WhatsApp</a></p>
+      <p><strong>WhatsApp:</strong> <a href="https://wa.me/919650000148" class="text-green-600">Chat on WhatsApp</a></p>
     </div>
   </div>
+
+  <script>
+    // REPLACE with your Apps Script Web App URL (deployed)
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzmKLDILY3PTEaKD4ghlDbMMAIreRS2dFJGh6bCnPTtZhfb8AjXO0wrXdlnwto6lgdi/exec";
+
+    const form = document.getElementById("contactForm");
+    const status = document.getElementById("formStatus");
+    const btn = document.getElementById("submitBtn");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      status.textContent = "Sending...";
+      btn.disabled = true;
+
+      // gather form data
+      const formData = {
+        name: document.getElementById("name").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        phone: document.getElementById("phone").value.trim(),
+        whatsapp: document.getElementById("whatsapp").value.trim(),
+        message: document.getElementById("message").value.trim(),
+        hp: document.getElementById("hp").value || "",
+        source: "Website - Contact Page"
+      };
+
+      try {
+        const res = await fetch(WEB_APP_URL, {
+          method: "POST",
+          mode: "cors",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(formData)
+        });
+
+        // parse JSON response
+        const data = await res.json();
+
+        if (res.ok && data.status === "success") {
+          status.textContent = "Thank you — your message has been sent.";
+          form.reset();
+        } else {
+          status.textContent = data.message || "Submission failed. Try again later.";
+        }
+
+      } catch (err) {
+        console.error(err);
+        status.textContent = "Network error: could not submit form.";
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  </script>
 </section>
-
-
-
-  <!-- Footer -->
-  <footer class="bg-yellow-200 text-center py-6 mt-12">
-    <p>&copy; 2025 Astro Vastu Insights | All Rights Reserved</p>
-  </footer>
-
-</body>
-</html>
